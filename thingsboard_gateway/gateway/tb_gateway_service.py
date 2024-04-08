@@ -317,16 +317,16 @@ class TBGatewayService:
 
         self.__init_remote_configuration()
 
-        if path.exists('/tmp/gateway'):
-            try:
-                # deleting old manager if it was closed incorrectly
-                system('rm -rf /tmp/gateway')
-            except OSError as e:
-                log.exception(e)
+        # if path.exists('/tmp/gateway'):
+        #     try:
+        #         # deleting old manager if it was closed incorrectly
+        #         system('rm -rf /tmp/gateway')
+        #     except OSError as e:
+        #         log.exception(e)
 
-        manager_address = '/tmp/gateway'
-        if platform_system() == 'Windows':
-            manager_address = ('127.0.0.1', 9999)
+        # manager_address = '/tmp/gateway'
+        # if platform_system() == 'Windows':
+        manager_address = ('127.0.0.1', 9999)
         self.manager = GatewayManager(address=manager_address, authkey=b'gateway')
 
         if current_thread() is main_thread():
@@ -548,8 +548,8 @@ class TBGatewayService:
 
         if self.__grpc_manager is not None:
             self.__grpc_manager.stop()
-        if os.path.exists("/tmp/gateway"):
-            os.remove("/tmp/gateway")
+        # if os.path.exists("/tmp/gateway"):
+        #     os.remove("/tmp/gateway")
         self.__close_connectors()
         if hasattr(self, "_event_storage"):
             self._event_storage.stop()

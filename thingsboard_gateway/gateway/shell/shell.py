@@ -80,9 +80,9 @@ class Shell(cmd.Cmd, Thread):
         self.stdout.write('Establish connection...\n')
         while elapsed_time <= timeout:
             try:
-                manager_address = '/tmp/gateway'
-                if platform_system() == 'Windows':
-                    manager_address = ('127.0.0.1', 9999)
+                # manager_address = '/tmp/gateway'
+                # if platform_system() == 'Windows':
+                manager_address = ('127.0.0.1', 9999)
                 gateway_manager = GatewayManager(address=manager_address, authkey=b'gateway')
                 gateway_manager.connect()
                 GatewayManager.register('get_gateway', proxytype=AutoProxy)
