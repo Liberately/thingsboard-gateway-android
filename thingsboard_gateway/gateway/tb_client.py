@@ -77,12 +77,12 @@ class TBClient(threading.Thread):
                     credentials['client_id'] = ''.join(random.choice(string.ascii_lowercase) for _ in range(15))
                     credentials['username'] = ''.join(random.choice(string.ascii_lowercase) for _ in range(15))
                     credentials['password'] = ''.join(random.choice(string.ascii_lowercase) for _ in range(15))
-                elif credentials_type.upper() == 'X509_CERTIFICATE':
-                    self._ca_cert_name = credentials.pop('caCert')
-                    new_cert_path = self.__config_folder_path + 'cert.pem'
-                    new_private_key_path = self.__config_folder_path + 'key.pem'
-                    gen_hash = TBUtility.generate_certificate(new_cert_path, new_private_key_path).decode('utf-8')
-                    credentials['hash'] = gen_hash
+                # elif credentials_type.upper() == 'X509_CERTIFICATE':
+                #     self._ca_cert_name = credentials.pop('caCert')
+                #     new_cert_path = self.__config_folder_path + 'cert.pem'
+                #     new_private_key_path = self.__config_folder_path + 'key.pem'
+                #     gen_hash = TBUtility.generate_certificate(new_cert_path, new_private_key_path).decode('utf-8')
+                #     credentials['hash'] = gen_hash
                 else:
                     raise RuntimeError(
                         'Unknown provisioning type (Available options: AUTO, ACCESS_TOKEN, MQTT_BASIC, X509_CERTIFICATE)')
@@ -141,29 +141,29 @@ class TBClient(threading.Thread):
                                               quality_of_service=self.__default_quality_of_service,
                                               client_id=self.__client_id)
 
-        if self.__tls:
-            self.__ca_cert = self.__config_folder_path + credentials.get("caCert") if credentials.get(
-                "caCert") is not None else None
-            self.__private_key = self.__config_folder_path + credentials.get("privateKey") if credentials.get(
-                "privateKey") is not None else None
-            self.__cert = self.__config_folder_path + credentials.get("cert") if credentials.get(
-                "cert") is not None else None
-            self.__check_cert_period = credentials.get('checkCertPeriod', 86400)
-            self.__certificate_days_left = credentials.get('certificateDaysLeft', 3)
-
-            # check certificates for end date
-            self._check_cert_thread = threading.Thread(name='Check Certificates Thread',
-                                                       target=self._check_certificates, daemon=True)
-            self._check_cert_thread.start()
-
-            self.client._client.tls_set(ca_certs=self.__ca_cert,
-                                        certfile=self.__cert,
-                                        keyfile=self.__private_key,
-                                        tls_version=PROTOCOL_TLSv1_2,
-                                        cert_reqs=CERT_REQUIRED,
-                                        ciphers=None)
-            if credentials.get("insecure", False):
-                self.client._client.tls_insecure_set(True)
+        # if self.__tls:
+        #     self.__ca_cert = self.__config_folder_path + credentials.get("caCert") if credentials.get(
+        #         "caCert") is not None else None
+        #     self.__private_key = self.__config_folder_path + credentials.get("privateKey") if credentials.get(
+        #         "privateKey") is not None else None
+        #     self.__cert = self.__config_folder_path + credentials.get("cert") if credentials.get(
+        #         "cert") is not None else None
+        #     self.__check_cert_period = credentials.get('checkCertPeriod', 86400)
+        #     self.__certificate_days_left = credentials.get('certificateDaysLeft', 3)
+        #
+        #     # check certificates for end date
+        #     self._check_cert_thread = threading.Thread(name='Check Certificates Thread',
+        #                                                target=self._check_certificates, daemon=True)
+        #     self._check_cert_thread.start()
+        #
+        #     self.client._client.tls_set(ca_certs=self.__ca_cert,
+        #                                 certfile=self.__cert,
+        #                                 keyfile=self.__private_key,
+        #                                 tls_version=PROTOCOL_TLSv1_2,
+        #                                 cert_reqs=CERT_REQUIRED,
+        #                                 ciphers=None)
+        #     if credentials.get("insecure", False):
+        #         self.client._client.tls_insecure_set(True)
 
     @staticmethod
     def _get_provisioned_creds(credentials):
@@ -182,27 +182,27 @@ class TBClient(threading.Thread):
 
         return creds
 
-    def _check_certificates(self):
-        while not self.__stopped and not self.__paused:
-            if time() - self._last_cert_check_time >= self.__check_cert_period:
-                if self.__cert:
-                    self.__logger.info('Will generate new certificate')
-                    new_cert = TBUtility.check_certificate(self.__cert, key=self.__private_key,
-                                                           days_left=self.__certificate_days_left)
-
-                    if new_cert:
-                        self.client.send_attributes({'newCertificate': new_cert})
-
-                if self.__ca_cert:
-                    is_outdated = TBUtility.check_certificate(self.__ca_cert, generate_new=False,
-                                                              days_left=self.__certificate_days_left)
-
-                    if is_outdated:
-                        self.client.send_attributes({'CACertificate': 'CA certificate will outdated soon'})
-
-                self._last_cert_check_time = time()
-
-            sleep(10)
+    # def _check_certificates(self):
+    #     while not self.__stopped and not self.__paused:
+    #         if time() - self._last_cert_check_time >= self.__check_cert_period:
+    #             if self.__cert:
+    #                 self.__logger.info('Will generate new certificate')
+    #                 new_cert = TBUtility.check_certificate(self.__cert, key=self.__private_key,
+    #                                                        days_left=self.__certificate_days_left)
+    #
+    #                 if new_cert:
+    #                     self.client.send_attributes({'newCertificate': new_cert})
+    #
+    #             if self.__ca_cert:
+    #                 is_outdated = TBUtility.check_certificate(self.__ca_cert, generate_new=False,
+    #                                                           days_left=self.__certificate_days_left)
+    #
+    #                 if is_outdated:
+    #                     self.client.send_attributes({'CACertificate': 'CA certificate will outdated soon'})
+    #
+    #             self._last_cert_check_time = time()
+    #
+    #         sleep(10)
 
     def pause(self):
         self.__paused = True

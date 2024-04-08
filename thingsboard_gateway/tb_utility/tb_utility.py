@@ -16,12 +16,12 @@ from logging import getLogger
 from re import search, findall
 from uuid import uuid4
 
-from cryptography import x509
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import serialization
-from jsonpath_rw import parse
+# from cryptography import x509
+# from cryptography.x509.oid import NameOID
+# from cryptography.hazmat.primitives import hashes
+# from cryptography.hazmat.primitives.asymmetric import ec
+# from cryptography.hazmat.primitives import serialization
+# from jsonpath_rw import parse
 from simplejson import JSONDecodeError, dumps, loads
 
 log = getLogger("service")
@@ -198,42 +198,42 @@ class TBUtility:
     def get_dict_key_by_value(dictionary: dict, value):
         return list(dictionary.values())[list(dictionary.values()).index(value)]
 
-    @staticmethod
-    def generate_certificate(old_certificate_path, old_key_path, old_certificate=None):
-        key = ec.generate_private_key(ec.SECP256R1())
-        public_key = key.public_key()
-        builder = x509.CertificateBuilder()
-        builder = builder.subject_name(old_certificate.subject if old_certificate else x509.Name(
-            [x509.NameAttribute(NameOID.COMMON_NAME, u'localhost'), ]))
-        builder = builder.issuer_name(old_certificate.issuer if old_certificate else x509.Name(
-            [x509.NameAttribute(NameOID.COMMON_NAME, u'localhost'), ]))
-        builder = builder.not_valid_before(datetime.datetime.today() - datetime.timedelta(days=1))
-        builder = builder.not_valid_after(datetime.datetime.today() + (datetime.timedelta(1, 0, 0) * 365))
-        builder = builder.serial_number(x509.random_serial_number())
-        builder = builder.public_key(public_key)
-        certificate = builder.sign(private_key=key, algorithm=hashes.SHA256())
+    # @staticmethod
+    # def generate_certificate(old_certificate_path, old_key_path, old_certificate=None):
+    #     key = ec.generate_private_key(ec.SECP256R1())
+    #     public_key = key.public_key()
+    #     builder = x509.CertificateBuilder()
+    #     builder = builder.subject_name(old_certificate.subject if old_certificate else x509.Name(
+    #         [x509.NameAttribute(NameOID.COMMON_NAME, u'localhost'), ]))
+    #     builder = builder.issuer_name(old_certificate.issuer if old_certificate else x509.Name(
+    #         [x509.NameAttribute(NameOID.COMMON_NAME, u'localhost'), ]))
+    #     builder = builder.not_valid_before(datetime.datetime.today() - datetime.timedelta(days=1))
+    #     builder = builder.not_valid_after(datetime.datetime.today() + (datetime.timedelta(1, 0, 0) * 365))
+    #     builder = builder.serial_number(x509.random_serial_number())
+    #     builder = builder.public_key(public_key)
+    #     certificate = builder.sign(private_key=key, algorithm=hashes.SHA256())
+    #
+    #     cert = certificate.public_bytes(serialization.Encoding.PEM)
+    #     with open(old_certificate_path, 'wb+') as f:
+    #         f.write(cert)
+    #
+    #     key = key.private_bytes(encoding=serialization.Encoding.PEM,
+    #                             format=serialization.PrivateFormat.TraditionalOpenSSL,
+    #                             encryption_algorithm=serialization.NoEncryption())
+    #     with open(old_key_path, 'wb+') as f:
+    #         f.write(key)
+    #
+    #     return cert
 
-        cert = certificate.public_bytes(serialization.Encoding.PEM)
-        with open(old_certificate_path, 'wb+') as f:
-            f.write(cert)
-
-        key = key.private_bytes(encoding=serialization.Encoding.PEM,
-                                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                                encryption_algorithm=serialization.NoEncryption())
-        with open(old_key_path, 'wb+') as f:
-            f.write(key)
-
-        return cert
-
-    @staticmethod
-    def check_certificate(certificate, key=None, generate_new=True, days_left=3):
-        cert_detail = x509.load_pem_x509_certificate(open(certificate, 'rb').read())
-
-        if cert_detail.not_valid_after - datetime.datetime.now() <= datetime.timedelta(days=days_left):
-            if generate_new:
-                return TBUtility.generate_certificate(certificate, key, cert_detail)
-            else:
-                return True
+    # @staticmethod
+    # def check_certificate(certificate, key=None, generate_new=True, days_left=3):
+    #     cert_detail = x509.load_pem_x509_certificate(open(certificate, 'rb').read())
+    #
+    #     if cert_detail.not_valid_after - datetime.datetime.now() <= datetime.timedelta(days=days_left):
+    #         if generate_new:
+    #             return TBUtility.generate_certificate(certificate, key, cert_detail)
+    #         else:
+    #             return True
 
     @staticmethod
     def convert_data_type(data, new_type, use_eval=False):

@@ -145,24 +145,24 @@ class RESTConnector(Connector, Thread):
         ssl_context = None
         cert = None
         key = None
-        if self.__config.get('SSL', False):
-            if not self.__config.get('security'):
-                if not os.path.exists('domain_srv.crt'):
-                    from thingsboard_gateway.connectors.rest.ssl_generator import SSLGenerator
-                    n = SSLGenerator(self.__config['host'])
-                    n.generate_certificate()
-
-                cert = 'domain_srv.crt'
-                key = 'domain_srv.key'
-            else:
-                try:
-                    cert = self.__config['security']['cert']
-                    key = self.__config['security']['key']
-                except KeyError as e:
-                    self.__log.error('Provide certificate and key path!\n %s', e)
-
-            ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-            ssl_context.load_cert_chain(cert, key)
+        # if self.__config.get('SSL', False):
+        #     if not self.__config.get('security'):
+        #         if not os.path.exists('domain_srv.crt'):
+        #             from thingsboard_gateway.connectors.rest.ssl_generator import SSLGenerator
+        #             n = SSLGenerator(self.__config['host'])
+        #             n.generate_certificate()
+        #
+        #         cert = 'domain_srv.crt'
+        #         key = 'domain_srv.key'
+        #     else:
+        #         try:
+        #             cert = self.__config['security']['cert']
+        #             key = self.__config['security']['key']
+        #         except KeyError as e:
+        #             self.__log.error('Provide certificate and key path!\n %s', e)
+        #
+        #     ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        #     ssl_context.load_cert_chain(cert, key)
 
         self.load_handlers()
         self._runner = web.AppRunner(self._app)
