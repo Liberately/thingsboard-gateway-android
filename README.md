@@ -11,6 +11,18 @@ vim thingsboard_gateway/config/tb_gateway.json
 python3 ./thingsboard_gateway/tb_gateway.py
 ```
 
+## 日志
+移除了 grpc  
+移除了 opcua  
+移除了 tls  
+移除了 x509   
+移除了 thingsboard_gateway.gateway.grpc_service  
+移除了 thingsboard_gateway.connectors.opcua_asyncio  
+移除了 thingsboard_gateway.connectors.opcua  
+移除了 thingsboard_gateway.extensions.opcua  
+移除了 thingsboard_gateway.extensions.opcua_asyncio  
+修改 manager_address 为 ('127.0.0.1', 9999) 非 /tmp/gateway
+
 # 用于在 Android termux 中使用的 MQTT 代理
 
 ```bash
