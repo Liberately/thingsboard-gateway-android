@@ -18,6 +18,7 @@ pkg install mosquitto
 vim /data/data/com.termux/files/usr/etc/mosquitto/mosquitto.conf
 ```
 
+添加以下配置开放外部连接
 ```config
 allow_anonymous true
 listener 1883 0.0.0.0
